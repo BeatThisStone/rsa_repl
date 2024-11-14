@@ -1,6 +1,5 @@
 use std::io;
 
-use rsa_repl::Config;
 
 fn main() {
     println!("1) Generate keys\n2) Encrypt a message with public key\n3) Encrypt a message with private key\n4) Decrypt a message with public key\n5) Decrypt a message with private: key");

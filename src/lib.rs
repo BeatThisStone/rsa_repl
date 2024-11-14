@@ -22,12 +22,16 @@ impl Config {
         let mut encrypted_string: String = String::new();
         Vec::from(self.message)
             .iter()
-            .for_each(|x| encrypted_string.push_str(&x
-                .to_bigint()
-                .unwrap()
-                .modpow(&self.d_or_e, &self.n)
-                .to_str_radix(10)
-                );
+            .for_each(|x| {
+                     encrypted_string.push_str(
+                        &x
+                        .to_bigint()
+                        .unwrap()
+                        .modpow(&self.d_or_e, &self.n)
+                        .to_str_radix(10)
+                    );
+                    encrypted_string.push(';');
+                }
             );
         return encrypted_string;
     }
@@ -43,7 +47,7 @@ mod tests {
 
     #[test]
     fn encrypt_with_public() {
-        let config = Config::build("0ciao".to_string(), 5, 119, true);
+        let config = Config::build("00ciao".to_string(), 5, 119, true);
         println!("{}", config.encrypt());
     }
 }
