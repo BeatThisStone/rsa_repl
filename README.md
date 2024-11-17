@@ -1,5 +1,9 @@
 # rsa_repl
- School project
+ School project of a REPL interface which can generate public and private keys and encrypt or decypt plain text.
+ Uses also a basic level of loggers.
+ Two crates are used for BigInts:
+ * `num_primes`, used to generate random primes
+ * `num_bigint`, used for its implementation of the Modular Multiplicative Inverse 
 
 ## Biggest Values Calculated
 ### Bytes:
