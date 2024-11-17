@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 log = "0.4.22"
 num-bigint = "0.4.6"
+num-primes = "0.3.0"
 simple_logger = "5.0.0"

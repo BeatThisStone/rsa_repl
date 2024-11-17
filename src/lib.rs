@@ -1,4 +1,6 @@
-use num_bigint::{ToBigInt, BigInt};
+use num_primes::Generator;
+use num_bigint::{BigInt, ToBigInt};
+use log::info;
 
 pub struct Config {
     message: String,
@@ -51,8 +53,32 @@ impl Config {
     }
 }
 
-pub fn key_gen() {
-    ()
+pub fn key_gen(prime_size: usize) {
+    let p = Generator::new_prime(prime_size);
+    info!("p: {p}");
+    let q = loop {
+        let candidate = Generator::new_prime(prime_size);
+        if p != candidate {
+            break candidate;
+        }
+    };
+    info!("q: {q}");
+    let one: u32 = 1; 
+    let v = (&p-one) * (&q-one);
+    info!("v: {v}");
+    let n = &p * &q;
+    info!("n: {n}");
+    let e = loop {
+        let e = Generator::new_prime(prime_size);
+        if e != v && e < v {
+            break e;   
+       } 
+    };
+    info!("e: {e}");
+    let e = BigInt::parse_bytes(e.to_str_radix(10).as_bytes(), 10).unwrap();
+    let v = BigInt::parse_bytes(v.to_str_radix(10).as_bytes(), 10).unwrap();
+    let d = e.modinv(&v).unwrap();
+    info!("d: {d}");
 }
 
 #[cfg(test)]

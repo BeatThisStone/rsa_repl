@@ -9,6 +9,34 @@ use rsa_repl::{Config, key_gen};
 
 fn main() {
     simple_logger::init_with_level(Level::Info).unwrap();
+    info!("Choose a log level:\n1) INFO\n2) WARN\n3) ERROR");
+    let user_choice: i32 = loop {
+        let mut response = String::new();
+        if let Err(e) = io::stdin().read_line(&mut response) {
+            error!("Error, failed to read response: {e}");
+            exit(1);
+        }
+
+        let response : i32 = match response.trim().parse() {
+            Ok(number) => number,
+            Err(_) => {
+                warn!("Please inser a number");
+                continue;
+            },
+        };
+
+        if !(1..=6).contains(&response) {
+            warn!("Please insert a valid number");
+            continue;
+        };
+        break response;
+    };
+    let level = match user_choice {
+        1 => Level::Info,
+        2 => Level::Warn,
+        _ => Level::Error,
+    };
+    log::set_max_level(level.to_level_filter());
     loop {
         repl();
     }
@@ -38,7 +66,32 @@ fn repl() {
         break response;
     };
     match user_choice {
-        1 => key_gen(),
+        1 => {
+            info!("Insert how many bites a prime number should have, from 8 to 1024");
+            let user_choice = loop {
+                let mut resposne : String = String::new();
+                if let Err(e) = io::stdin().read_line(&mut resposne) {
+                    error!("Failed to read resposne, {e}");
+                    return;
+                }
+                match resposne.trim().parse::<usize>() {
+                    Ok(num) => {
+                        if (8..=1024).contains(&num) {
+                            break num;
+                        }
+                        else {
+                            warn!("Number outside of MIN value {} and MAX value 1024", usize::MIN);
+                        }
+                    },
+                    Err(_) => {
+                        warn!("Number outside of MIN value {} and MAX value 1024", usize::MIN);
+                    }
+                };
+                    
+            };
+            key_gen(user_choice);
+
+        },
         2 => rsa(true, true),
         3 => rsa(true, false),
         4 => rsa(false, true),
