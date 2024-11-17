@@ -8,11 +8,11 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn build(message: String, d_or_e: u32, n: u32, encrypting: bool) -> Config {
-        Config { message, d_or_e: (d_or_e.to_bigint().unwrap()), n: (n.to_bigint().unwrap()), encrypting}
+    pub fn build(message: &str, d_or_e: BigInt, n: BigInt, encrypting: bool) -> Config {
+        Config { message: (message.to_string()), d_or_e, n, encrypting}
     }
     pub fn run(self) -> String {
-        return if self.encrypting {
+        if self.encrypting {
             self.encrypt()
         } else {
             self.decrypt()
@@ -33,23 +33,27 @@ impl Config {
                     encrypted_string.push(';');
                 }
             );
-        return encrypted_string;
+        encrypted_string
     }
     fn decrypt(self) -> String {
        self.message
             .split(';')
+			.filter(|&x| !x.is_empty())
             .map(|x| 
                 BigInt::parse_bytes(&Vec::from(x), 10)
                     .unwrap()
                     .modpow(&self.d_or_e, &self.n)
                     .to_str_radix(10)
                     .parse::<u8>()
-                    .unwrap() as char
+                    .unwrap_or(u8::MIN) as char // not sure the unwrap_or is necessary
                 )
             .collect()
     }
 }
 
+pub fn key_gen() {
+    ()
+}
 
 #[cfg(test)]
 mod tests {
