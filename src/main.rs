@@ -67,7 +67,7 @@ fn repl() {
     };
     match user_choice {
         1 => {
-            info!("Insert how many bites a prime number should have, from 8 to 1024");
+            info!("Insert how many bites a prime number should have, from 8 to 4096");
             let user_choice = loop {
                 let mut resposne : String = String::new();
                 if let Err(e) = io::stdin().read_line(&mut resposne) {
@@ -84,7 +84,7 @@ fn repl() {
                         }
                     },
                     Err(_) => {
-                        warn!("Number outside of MIN value {} and MAX value 1024", usize::MIN);
+                        warn!("Number outside of MIN value {} and MAX value 4096", usize::MIN);
                     }
                 };
                     
