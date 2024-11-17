@@ -35,24 +35,18 @@ impl Config {
             );
         return encrypted_string;
     }
-    fn decrypt(self) -> Result<String, String> {
-        let parse_array: Result<Vec<u128>, _> = self.message
+    fn decrypt(self) -> String {
+       self.message
             .split(';')
-            .map(|x| x.parse::<u128>())
-            .collect();
-        if let Err(e) = parse_array {
-            return Err("Message could not be parsed, {e}".to_string());
-        }
-        let num_array: Vec<BigInt> = parse_array
-            .unwrap()
-            .iter()
             .map(|x| 
-                x
-                .to_bigint()
-                .unwrap()
-                .modpow(&self.d_or_e, &self.n))
-            .collect();
-        return Ok(String::new());
+                BigInt::parse_bytes(&Vec::from(x), 10)
+                    .unwrap()
+                    .modpow(&self.d_or_e, &self.n)
+                    .to_str_radix(10)
+                    .parse::<u8>()
+                    .unwrap() as char
+                )
+            .collect()
     }
 }
 
