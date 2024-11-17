@@ -76,11 +76,11 @@ fn repl() {
                 }
                 match resposne.trim().parse::<usize>() {
                     Ok(num) => {
-                        if (8..=1024).contains(&num) {
+                        if (8..=4096).contains(&num) {
                             break num;
                         }
                         else {
-                            warn!("Number outside of MIN value {} and MAX value 1024", usize::MIN);
+                            warn!("Number outside of MIN value {} and MAX value 4096", usize::MIN);
                         }
                     },
                     Err(_) => {
