@@ -23,7 +23,7 @@ impl Config {
         Vec::from(self.message)
             .iter()
             .for_each(|x| {
-                     encrypted_string.push_str(
+                    encrypted_string.push_str(
                         &x
                         .to_bigint()
                         .unwrap()
@@ -35,8 +35,24 @@ impl Config {
             );
         return encrypted_string;
     }
-    fn decrypt(self) -> String {
-        return String::new();
+    fn decrypt(self) -> Result<String, String> {
+        let parse_array: Result<Vec<u128>, _> = self.message
+            .split(';')
+            .map(|x| x.parse::<u128>())
+            .collect();
+        if let Err(e) = parse_array {
+            return Err("Message could not be parsed, {e}".to_string());
+        }
+        let num_array: Vec<BigInt> = parse_array
+            .unwrap()
+            .iter()
+            .map(|x| 
+                x
+                .to_bigint()
+                .unwrap()
+                .modpow(&self.d_or_e, &self.n))
+            .collect();
+        return Ok(String::new());
     }
 }
 
@@ -46,8 +62,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn encrypt_with_public() {
-        let config = Config::build("00ciao".to_string(), 5, 119, true);
-        println!("{}", config.encrypt());
+    fn encrypting() {
+        let config = Config::build("ciao".to_string(), 5, 119, true);
+        assert_eq!(config.run(), "29;56;20;76;".to_string());
+    }
+    #[test]
+    fn decrypting() {
+        let config = Config::build("29;56;20;76".to_string(), 269, 119, false);
+        assert_eq!(config.run(), "ciao".to_string());
     }
 }
