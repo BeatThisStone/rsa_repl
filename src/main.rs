@@ -150,6 +150,6 @@ fn rsa(encrypting: bool, public: bool) {
         info!("Encrypted message: {}", config.run());
     } 
     else {
-        info!("Decrypted ");
+        info!("Decrypted message: {} ", config.run());
     }
 }

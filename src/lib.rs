@@ -87,12 +87,12 @@ mod tests {
 
     #[test]
     fn encrypting() {
-        let config = Config::build("ciao".to_string(), 5, 119, true);
+        let config = Config::build("ciao", "5".parse::<BigInt>().unwrap(), "119".parse::<BigInt>().unwrap(), true);
         assert_eq!(config.run(), "29;56;20;76;".to_string());
     }
     #[test]
     fn decrypting() {
-        let config = Config::build("29;56;20;76".to_string(), 269, 119, false);
+        let config = Config::build("29;56;20;76", "269".parse::<BigInt>().unwrap(), "119".parse::<BigInt>().unwrap(), false);
         assert_eq!(config.run(), "ciao".to_string());
     }
 }
