@@ -38,7 +38,7 @@ impl Config {
     fn decrypt(self) -> String {
        self.message
             .split(';')
-			.filter(|&x| !x.is_empty())
+	    .filter(|&x| !x.is_empty() && !x.chars().any(|s| !s.is_numeric()))
             .map(|x| 
                 BigInt::parse_bytes(&Vec::from(x), 10)
                     .unwrap()

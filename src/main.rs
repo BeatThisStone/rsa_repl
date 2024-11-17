@@ -1,33 +1,38 @@
 use std::io;
 use std::process::exit;
-use num_bigint::{ToBigInt, BigInt};
+use num_bigint::BigInt;
+use log::{Level, info, warn, error};
+
+
 
 use rsa_repl::{Config, key_gen};
 
 fn main() {
+    simple_logger::init_with_level(Level::Info).unwrap();
     loop {
         repl();
     }
 }
 
 fn repl() {
-    println!("\n1) Generate keys\n2) Encrypt a message with public key\n3) Encrypt a message with private key\n4) Decrypt a message with public key\n5) Decrypt a message with private key\n6) Exit program");
+    info!("\n1) Generate keys\n2) Encrypt a message with public key\n3) Encrypt a message with private key\n4) Decrypt a message with public key\n5) Decrypt a message with private key\n6) Exit program");
     let user_choice: i32 = loop {
         let mut response = String::new();
-        io::stdin()
-            .read_line(&mut response)
-            .expect("Error, failed to read response");
+        if let Err(e) = io::stdin().read_line(&mut response) {
+            error!("Error, failed to read response: {e}");
+            exit(1);
+        }
 
         let response : i32 = match response.trim().parse() {
             Ok(number) => number,
             Err(_) => {
-                println!("Please inser a number");
+                warn!("Please inser a number");
                 continue;
             },
         };
 
         if !(1..=6).contains(&response) {
-            println!("Please insert a valid number");
+            warn!("Please insert a valid number");
             continue;
         };
         break response;
@@ -43,51 +48,55 @@ fn repl() {
 }
 
 fn rsa(encrypting: bool, public: bool) {
-    println!("Insert message");
+    info!("Insert message");
     let mut message: String = String::new();
     if let Err(e) = io::stdin().read_line(&mut message) {
-        eprintln!("Error, failed to read response: {e}");
+        info!("Error, failed to read response: {e}");
         return;
     }
     let d_or_e: BigInt = loop {
-        print!("Insert ");
         if public {
-            println!("e:");
+            info!("Insert e:");
         }
         else {
-            println!("d:");
-        };
+            info!("Insert d:");
+        }
 
         let mut response: String = String::new();
         if let Err(e) = io::stdin().read_line(&mut response) {
-            eprintln!("Error, failed to read response: {e}");
+            error!("Error, failed to read response: {e}");
             return;
         };
 
-        let num: BigInt = match BigInt::parse_bytes(&Vec::from(response.trim()), 10) {
+        match BigInt::parse_bytes(&Vec::from(response.trim()), 10) {
               Some(num) => break num,
               None => {
-                println!("Inserted invalid value");
+                warn!("Inserted invalid value");
                 continue;
               }, 
         };
     };
     let n: BigInt = loop {
-        println!("Insert n:");
+        info!("Insert n:");
         let mut response: String = String::new();
         if let Err(e) = io::stdin().read_line(&mut response) {
-            eprintln!("Error, failed to read response: {e}");
+            error!("Error, failed to read response: {e}");
             return;
         };
 
-        let num: BigInt = match BigInt::parse_bytes(&Vec::from(response.trim()), 10) {
-              Some(num) => break num,
-              None => {
-                println!("Inserted invalid value");
+        match BigInt::parse_bytes(&Vec::from(response.trim()), 10) {
+            Some(num) => break num,
+            None => {
+                warn!("Inserted invalid value");
                 continue;
-              }, 
+            }, 
         };
     };
     let config: Config = Config::build(message.trim(), d_or_e, n, encrypting);
-    println!("Decrypted message: {}", config.run());
+    if encrypting {
+        info!("Encrypted message: {}", config.run());
+    } 
+    else {
+        info!("Decrypted ");
+    }
 }
